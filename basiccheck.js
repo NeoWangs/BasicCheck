@@ -28,13 +28,14 @@ BasicCheck.prototype = {
 		if($class("errorTip",o.parentNode).length > 0){
 			$class("errorTip",o.parentNode)[0].innerHTML = "";
 		};
-		this.realValue = o.value.replace(/(^\s*)|(\s*$)/g, "");
+		this.realValue = String.trim ? o.value.trim() : o.value.replace(/(^\s*)|(\s*$)/g, "");
 		var ok = true;
 		var allowNull = o.getAttribute("allownull");
 		if(allowNull == null){
 			ok = this.ckeckNull(o); //验证空
 			if(!ok) return false;
 		}
+		if(this.realValue === "") return true //为空则不继续验证。（允许为空）
 		var checkLength = o.getAttribute("limit");
 		if(checkLength){
 			var range = checkLength.split(",");
@@ -54,6 +55,7 @@ BasicCheck.prototype = {
 			if(!ok) return false;
 		}
 		return true;
+	 
 	},
 	ckeckNull : function(o){
 		if(this.realValue === ""){
@@ -64,7 +66,7 @@ BasicCheck.prototype = {
 		return true;
 	},
 	checkLength : function(o,range){
-		var length = this.realValue.length;
+		var length = this.realValue.replace(/[\u4e00-\u9fa5]/g, 'xxx').length; //此处一个中文字符算三个字符
 		if(length > range[1] || length < range[0]){
 			var msg  = o.getAttribute("limitmsg") || "长度限制在"+range[0]+"到"+range[1]+"个字符之间！";
 			this.warm(o, msg);
@@ -78,6 +80,7 @@ BasicCheck.prototype = {
 			this.warm(o, msg);
 			return false;
 		}
+		return true;
 	},
 	checkReg : function(o,regexp){
 		if(!this.realValue.match(regexp)){
