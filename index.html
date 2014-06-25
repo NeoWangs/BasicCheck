@@ -1,33 +1,31 @@
-﻿<!doctype html >
+<!doctype html>
 <html>
 <head>
 <meta charset="UTF-8" />
 <title>简易表单验证</title>
-<meta name="Author" contect="ONEBOYS">
-<meta name="Site" contect="http://www.cssass.com">
-<script type="text/javascript" src="http://www.cssass.com/public/js/extend.js"></script>
-<script src="basiccheck.js"></script>
-<head>
+<meta name="Author" content="ONEBOYS" />
+<meta name="Site" content="http://www.cssass.com" />
+<script type="text/javascript" src="/public/js/extend.js"></script>
+<script src="/public/js/basiccheck.js"></script>
+</head>
 <body>
-<form id="myForm" >
+<form id="myForm" action="/">
 	<ul>
+		<li><p id="errorBox"> </p></li>
 		<li>
-			用户名：<input type="text" placeholder="输入用户名" maxlength="20" needcheck limit="6,20" limitmsg="不符合长度限定（中文2-20字，英文2-60字）！" reg="^[a-zA-Z]+$" errormsg="请使用英文和字母" />
+			用户名：<input type="text" placeholder="输入用户名" maxlength="20" needcheck limit="6,20" limitmsg="不符合长度限定（中文2-20字，英文2-60字）！" reg="^[a-zA-Z]+$" errormsg="请使用英文和字母" />*
 		</li>
 		<li>
-			密码：<input name="psw" type="password" needcheck limit="6,20" nullmsg="请输入密码！" />
+			密码：<input name="psw" type="password" needcheck limit="6,20" nullmsg="请输入密码！" />*
 		</li>
 		<li>
-			确认密码：<input type="password" needcheck limit="6,20" watchnode="psw" watchmsg="两次输入的密码不一致！" nullmsg="请输入密码！" />
+			确认密码：<input type="password" needcheck limit="6,20" watchnode="psw" watchmsg="两次输入的密码不一致！" nullmsg="请输入密码！" />*
 		</li>
 		<li>
 			电话：<input type="tel" needcheck allownull reg="\d{3,4}-\d{7,8}$|^1[3|4|5|8][0-9]\d{4,8}$" errormsg="请输入正确的电话号码！" />
 		</li>
 		<li>
-			邮箱：<input type="email" needcheck allownull reg="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" errormsg="请输入正确的邮箱地址！" />
-		</li>
-		<li>
-			附加验证：<input needcheck  type="email" errornode="tipBox" /><span id="tipBox"></span>
+			邮箱：<input type="email" needcheck allownull reg="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" errormsg="请输入正确的邮箱地址！" errornode="tipBox" /><span id="tipBox"></span>
 		</li>
 		<li>
 			<input type="submit" value="提交" />
@@ -36,6 +34,26 @@
 </form>
 </body>
 <script>
-new BasicCheck($id("myForm"));
+	var addition = function(){
+		//表单直接验证之外的验证函数
+		var errorBox = $id("errorBox");
+		if(random()%2 == 0){
+			errorBox.innerHTML = "当前时间不允许提交！请重新尝试！";
+			return false;
+		}else{
+			errorBox.innerHTML = "";
+			return true;
+		}
+	};
+	
+	new BasicCheck($id("myForm"),addition);
 </script>
+<p>1. 调用：new BasicCheck($id("myForm")); 参数为form表单元素节点</p>
+<p>2. 对需要验证的表单项加上needcheck</p>
+<p>3. 验证的错误提示——会默认会生成一个&lt;i class="errorTip"&gt;&lt;/i&gt;结构；如需自己指定可以添加一个errornode="指定的元素id名"</p>
+<p>4. nullmsg非空验证的提示语; 如果使用allownull可以允许为空</p>
+<p>5. limit字符长度验证，对应提示语在limitmsg</p>
+<p>6. watchnode用于比较验证，对应提示语在watchmsg</p>
+<p>7. reg正则验证，对应提示语在errormsg</p>
+<p>8. 额外验证可以增加第二个参数：new BasicCheck($id("myForm"),addition);</p>
 </html>
