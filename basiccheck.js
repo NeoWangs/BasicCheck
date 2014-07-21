@@ -1,26 +1,32 @@
 // +----------------------------------------------------------------------+
 // | BasicCheck.js   简易表单验证
 // +----------------------------------------------------------------------+
-// | Author: oneboys
+// | Author: Neoxone
 // +----------------------------------------------------------------------+
 // | Site: www.cssass.com
 // +----------------------------------------------------------------------+
-function BasicCheck(o, addition){
+function BasicCheck(config){
+	var o = (config.tagName && config.tagName == "FORM") ? config : config.form;
 	if(!o) return false;
 	var self = this;
 	this.formNode = o;
 	this.items = $tag("*[needcheck]",o);
-	events.addEvent(this.items, "blur", function(){
-		self.bindCheck(this);
-	});
+	if(config.warm){ //有自定义错误提示
+		this.warm = config.warm;
+	}else{
+		events.addEvent(this.items, "blur", function(){
+			self.bindCheck(this);
+		});
+	};
 	o.onsubmit = function(){
 		var ok = true;
 		for(var i in self.items){
 			if (!self.items.hasOwnProperty(i)) continue;
 			ok = self.bindCheck(self.items[i]) && ok;
 		}
-		if(addition) ok = addition() && ok;
+		if(config.addition) ok = config.addition() && ok;
 		if(!ok) return false;
+		if(config.ajaxReq) return config.ajaxReq();
 	};
 };
 BasicCheck.prototype = {
@@ -35,7 +41,7 @@ BasicCheck.prototype = {
 			ok = this.ckeckNull(o); //验证空
 			if(!ok) return false;
 		}
-		if(this.realValue === "") return true //为空则不继续验证。（允许为空）
+		if(this.realValue === "") return true; //为空则不继续验证。（允许为空）
 		var checkLength = o.getAttribute("limit");
 		if(checkLength){
 			var range = checkLength.split(",");
@@ -66,7 +72,7 @@ BasicCheck.prototype = {
 		return true;
 	},
 	checkLength : function(o,range){
-		var length = this.realValue.replace(/[\u4e00-\u9fa5]/g, 'xxx').length; //此处一个中文字符算三个字符
+		var length = this.realValue.replace(/[\u4e00-\u9fa5]/g, 'xx').length; //此处一个中文字符算二个字符
 		if(length > range[1] || length < range[0]){
 			var msg  = o.getAttribute("limitmsg") || "长度限制在"+range[0]+"到"+range[1]+"个字符之间！";
 			this.warm(o, msg);
