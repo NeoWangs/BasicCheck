@@ -20,13 +20,21 @@ function BasicCheck(config){
 	};
 	o.onsubmit = function(){
 		var ok = true;
-		for(var i in self.items){
-			if (!self.items.hasOwnProperty(i)) continue;
+		var i = self.items.length - 1;
+		do{
 			ok = self.bindCheck(self.items[i]) && ok;
-		}
+		}while(i-->0);
 		if(config.addition) ok = config.addition() && ok;
 		if(!ok) return false;
-		if(config.ajaxReq) return config.ajaxReq();
+		if(config.ajaxReq) {
+			//有异步请求就不走Form提交
+			try{
+				config.ajaxReq();
+			}catch(e){
+				console.log("异步表单error",e);
+			}
+			return false;
+		}
 	};
 };
 BasicCheck.prototype = {
@@ -61,7 +69,6 @@ BasicCheck.prototype = {
 			if(!ok) return false;
 		}
 		return true;
-	 
 	},
 	ckeckNull : function(o){
 		if(this.realValue === ""){
