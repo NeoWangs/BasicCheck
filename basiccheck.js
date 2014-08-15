@@ -11,7 +11,7 @@ function BasicCheck(config){
 	var self = this;
 	this.formNode = o;
 	this.items = $tag("*[needcheck]",o);
-	if(config.warm){ //有自定义错误提示
+	if(config.warm){ //有自定义错误提示,此情况下blur不触发验证，只有submit才触发
 		this.warm = config.warm;
 	}else{
 		events.addEvent(this.items, "blur", function(){
@@ -20,14 +20,14 @@ function BasicCheck(config){
 	};
 	o.onsubmit = function(){
 		var ok = true;
+		if(config.warm) config.warm("","");
 		var i = self.items.length - 1;
 		do{
 			ok = self.bindCheck(self.items[i]) && ok;
 		}while(i-->0);
 		if(config.addition) ok = config.addition() && ok;
 		if(!ok) return false;
-		if(config.ajaxReq) {
-			//有异步请求就不走Form提交
+		if(config.ajaxReq) { //有异步请求就不走Form提交
 			try{
 				config.ajaxReq();
 			}catch(e){
