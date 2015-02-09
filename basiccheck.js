@@ -21,10 +21,10 @@ function BasicCheck(config){
 	o.onsubmit = function(){
 		var ok = true;
 		if(config.warm) config.warm("","");
-		var i = self.items.length - 1;
-		do{
+		var i = self.items.length;
+		while(i--){
 			ok = self.bindCheck(self.items[i]) && ok;
-		}while(i-->0);
+		};
 		if(config.addition) ok = config.addition() && ok;
 		if(!ok) return false;
 		if(config.ajaxReq) { //有异步请求就不走Form提交
