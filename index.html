@@ -24,7 +24,12 @@
 			用户名：<input type="text" name="user" placeholder="输入用户名" maxlength="20" needcheck nullmsg="用户名不能为空！" limit="6,20" limitmsg="不符合长度限定（中文2-20字，英文2-60字）！" reg="^[a-zA-Z]+$" errormsg="请使用英文和字母" />*
 		</li>
 		<li>
-			性别：<label><input type="radio" name="sex" value="0" >女 </label> <label><input type="radio" name="sex" value="1" >男</label>  *<span id="errorBox"> </span>
+			性别：<select name="sex" needcheck checkfunc="sexCheck" funcmsg="请选择性别！">
+				<option value=-1>请选择</option>
+				<option value=1>男</option>
+				<option value=2>女</option>
+				<option value=3>保密</option>
+			</select>
 		</li>
 		<li>
 			密码：<input name="psw" type="password" needcheck limit="6,20" nullmsg="请输入密码！" />*
@@ -38,6 +43,7 @@
 		<li>
 			邮箱：<input type="email" needcheck allownull reg="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" errormsg="请输入正确的邮箱地址！" errornode="tipBox" /><span id="tipBox"></span>
 		</li>
+		<li>隐私：<label><input name="praviteSet" type="checkbox"  />同意</label></li>
 		<li>
 			<input type="submit" value="提交" />
 		</li>
@@ -45,16 +51,17 @@
 </form>
 </body>
 <script>
+	function sexCheck(){
+		return $id("myForm")["sex"].value > -1;
+	}
+	
 	var addition = function(){
 		//表单直接验证之外的扩展验证函数
-		var errorBox = $id("errorBox");
-		if($id("myForm")["sex"][0].checked || $id("myForm")["sex"][1].checked){
-			errorBox.innerHTML = "";
-			return true;
-		}else{
-			errorBox.innerHTML = "请选择性别";
+		if(!$id("myForm")["praviteSet"].checked){
+			Win.alert("请同意隐私设置！");
 			return false;
 		}
+		return true;
 	};
 	
 	function ajaxReq(){
@@ -69,19 +76,15 @@
 		return false;
 	};
 	
-	function warm(o,msg){
-		Win.alert(msg);
-	}
-	
 	//new BasicCheck($id("myForm"));
 	
 	new BasicCheck({
 		form: $id("myForm"),
 		addition : addition,
 		ajaxReq : ajaxReq//,
-		//warm : function(o,msg){
-		//	$id("err").innerHTML = msg;
-		//}
+		// warm : function(o,msg){
+			// Win.alert(msg);
+		// }
 	});
 	
 </script>
@@ -104,6 +107,9 @@
     </li>
     <li>reg正则验证，对应提示语在errormsg
         <pre>&lt;input needcheck reg="\d{3,4}-\d{7,8}$|^1[3|4|5|8][0-9]\d{4,8}$" errormsg="请输入正确的电话号码！"/&gt; </pre>
+    </li>
+    <li>自定义方法验证，对应提示语在funcmsg(可为空，为空时提示语可在方法内书写)
+        <pre>&lt;input needcheck checkfunc="sexCheck" funcmsg="请选择性别！"/&gt; </pre>
     </li>
     <li>
         验证的错误提示——会默认会生成一个&lt;i class="errorTip"&gt;&lt;/i&gt;结构；如需自己指定可以添加一个errornode="指定的元素id名"

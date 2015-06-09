@@ -77,6 +77,11 @@ BasicCheck.prototype = {
 			ok = this.checkUnity(o, node);
 			if (!ok) return false;
 		}
+		var checkFuncName = o.getAttribute("checkfunc"); //自定义方法验证
+		if(checkFuncName) {
+			ok = this.checkFunc(o,checkFuncName);
+			if (!ok) return false;
+		}
 		return true;
 	},
 	ckeckNull: function(o) {
@@ -108,6 +113,14 @@ BasicCheck.prototype = {
 		if (!this.realValue.match(regexp)) {
 			var msg = o.getAttribute("errormsg");
 			this.warm(o, msg);
+			return false;
+		}
+		return true;
+	},
+	checkFunc : function(o,func){
+		if(!window[func].call(this)){
+			var msg = o.getAttribute("funcmsg");
+			if(msg) this.warm(o, msg);
 			return false;
 		}
 		return true;
